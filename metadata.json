@@ -1,0 +1,6 @@
+{
+  "name": "KROMA Coffee Atelier",
+  "description": "Website landing page resmi KROMA Coffee Atelier — menghadirkan racikan kopi artisanal, ruang bernuansa editorial, dan pengalaman bersantap yang tenang.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
