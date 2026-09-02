@@ -28,6 +28,7 @@ export const getCmsData = (): CafeFullData => {
       ...parsed,
       reviews: parsed.reviews || INITIAL_CAFE_DATA.reviews,
       theme: parsed.theme || INITIAL_CAFE_DATA.theme,
+      legal: parsed.legal || INITIAL_CAFE_DATA.legal,
     };
     applyThemeToDocument(completeData.theme);
     return completeData;

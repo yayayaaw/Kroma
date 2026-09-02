@@ -344,5 +344,11 @@ export const INITIAL_CAFE_DATA: CafeFullData = {
     mode: 'preset',
     activePresetId: 'monochrome',
   },
+  legal: {
+    businessLegalName: 'KROMA Coffee Atelier (PT Kroma Kuliner Nusantara)',
+    contactEmail: 'legal@kromacafe.id',
+    contactPhone: '+62 812-8890-4200',
+    lastUpdatedDate: '2 September 2026',
+  },
   lastUpdated: new Date().toISOString(),
 };

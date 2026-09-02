@@ -181,6 +181,13 @@ export interface CafeThemeConfig {
   };
 }
 
+export interface CafeLegalConfig {
+  businessLegalName: string;
+  contactEmail: string;
+  contactPhone: string;
+  lastUpdatedDate: string;
+}
+
 export interface CafeFullData {
   branding: CafeBranding;
   hero: CafeHero;
@@ -193,6 +200,7 @@ export interface CafeFullData {
   reservation: CafeReservationConfig;
   footer: CafeFooterConfig;
   theme: CafeThemeConfig;
+  legal?: CafeLegalConfig;
   lastUpdated: string;
 }
 

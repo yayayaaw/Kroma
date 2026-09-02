@@ -1,13 +1,30 @@
-import React from 'react';
-import { ArrowUp, Instagram, MessageSquare } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowUp, Instagram, MessageSquare, ShieldCheck, FileText } from 'lucide-react';
 import { useCmsData } from '../../cms/data/cmsStore';
+import { LegalModal } from './LegalModal';
 
 export const Footer: React.FC = () => {
   const { data } = useCmsData();
-  const { branding, location, footer } = data;
+  const { branding, location, footer, legal } = data;
+
+  const [legalModal, setLegalModal] = useState<{
+    isOpen: boolean;
+    type: 'privacy' | 'terms';
+  }>({
+    isOpen: false,
+    type: 'privacy',
+  });
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const openLegal = (type: 'privacy' | 'terms') => {
+    setLegalModal({ isOpen: true, type });
+  };
+
+  const closeLegal = () => {
+    setLegalModal((prev) => ({ ...prev, isOpen: false }));
   };
 
   const whatsappUrl = `https://wa.me/${location.whatsappRaw}?text=${encodeURIComponent(
@@ -74,16 +91,50 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Credits & Copyright */}
+        {/* Bottom Credits, Legal Links & Copyright */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-[11px] text-[#737373] gap-4">
-          <div>
-            © {new Date().getFullYear()} {branding.fullName}. {footer.copyrightText}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span>
+              © {new Date().getFullYear()} {branding.fullName}. {footer.copyrightText}
+            </span>
+            <span className="text-[#333336] hidden sm:inline">•</span>
+            {/* Minimalist Legal Links */}
+            <div className="flex items-center space-x-3">
+              <button
+                type="button"
+                id="footer-link-privacy"
+                onClick={() => openLegal('privacy')}
+                className="hover:text-[#FBFBF9] transition-colors underline-offset-4 hover:underline cursor-pointer flex items-center space-x-1"
+              >
+                <ShieldCheck className="w-3 h-3 text-[#52525B]" />
+                <span>Privacy Policy</span>
+              </button>
+              <span className="text-[#333336]">•</span>
+              <button
+                type="button"
+                id="footer-link-terms"
+                onClick={() => openLegal('terms')}
+                className="hover:text-[#FBFBF9] transition-colors underline-offset-4 hover:underline cursor-pointer flex items-center space-x-1"
+              >
+                <FileText className="w-3 h-3 text-[#52525B]" />
+                <span>Terms of Service</span>
+              </button>
+            </div>
           </div>
           <div className="font-light tracking-wide">
             {footer.designCredit}
           </div>
         </div>
       </div>
+
+      {/* Clean & Solid Legal Modal Overlay */}
+      <LegalModal
+        isOpen={legalModal.isOpen}
+        activeTab={legalModal.type}
+        onClose={closeLegal}
+        legal={legal}
+        brandingName={branding.name}
+      />
     </footer>
   );
 };

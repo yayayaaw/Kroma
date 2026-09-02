@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { CafeFullData } from '../types/cmsTypes';
+import { CafeFullData, CafeLegalConfig } from '../types/cmsTypes';
 import {
   exportCmsDataJson,
   importCmsDataJson,
   resetCmsData,
+  saveCmsData,
 } from '../data/cmsStore';
 import {
   Download,
@@ -14,6 +15,8 @@ import {
   FileJson,
   Database,
   Info,
+  ShieldCheck,
+  Save,
 } from 'lucide-react';
 
 interface CmsSettingsProps {
@@ -25,6 +28,29 @@ export const CmsSettings: React.FC<CmsSettingsProps> = ({ data, onRefreshData })
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+
+  // Legal Settings State
+  const [legalForm, setLegalForm] = useState<CafeLegalConfig>({
+    businessLegalName: data.legal?.businessLegalName || 'KROMA Coffee Atelier (PT Kroma Kuliner Nusantara)',
+    contactEmail: data.legal?.contactEmail || 'legal@kromacafe.id',
+    contactPhone: data.legal?.contactPhone || data.location.phone || '+62 812-8890-4200',
+    lastUpdatedDate: data.legal?.lastUpdatedDate || '2 September 2026',
+  });
+  const [legalSaved, setLegalSaved] = useState(false);
+
+  const handleSaveLegal = (e: React.FormEvent) => {
+    e.preventDefault();
+    const updated = {
+      ...data,
+      legal: legalForm,
+    };
+    const success = saveCmsData(updated);
+    if (success) {
+      onRefreshData();
+      setLegalSaved(true);
+      setTimeout(() => setLegalSaved(false), 3000);
+    }
+  };
 
   const handleExport = () => {
     const jsonStr = exportCmsDataJson();
@@ -189,6 +215,112 @@ export const CmsSettings: React.FC<CmsSettingsProps> = ({ data, onRefreshData })
             />
           </div>
         </div>
+      </div>
+
+      {/* Pengaturan Kebijakan & Legal (Privacy Policy & Terms of Service) */}
+      <div className="bg-[#FBFBF9] border border-[#E5E2DC] p-6 space-y-5">
+        <div className="flex items-center space-x-3">
+          <div className="p-2.5 bg-[#F5F4F0] text-[#141416]">
+            <ShieldCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-serif-display text-xl text-[#141416] font-normal">
+              Informasi Kebijakan & Legal (Privacy & Terms)
+            </h3>
+            <p className="text-xs text-[#737373] font-light">
+              Sesuaikan nama badan usaha, email resmi, kontak, dan tanggal pembaruan yang ditampilkan pada modal Privacy Policy dan Terms of Service.
+            </p>
+          </div>
+        </div>
+
+        {legalSaved && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
+            <Check className="w-4 h-4 text-emerald-600" />
+            <span>Informasi Kebijakan & Legal berhasil diperbarui!</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSaveLegal} className="space-y-4 pt-2 border-t border-[#E5E2DC]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Nama Bisnis */}
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[#737373] mb-1.5 font-medium">
+                Nama Bisnis / Entitas Legal
+              </label>
+              <input
+                type="text"
+                value={legalForm.businessLegalName}
+                onChange={(e) => setLegalForm({ ...legalForm, businessLegalName: e.target.value })}
+                placeholder="Contoh: KROMA Coffee Atelier (PT Kroma Kuliner Nusantara)"
+                className="w-full px-3 py-2 text-xs bg-white border border-[#E5E2DC] text-[#141416] focus:border-[#141416] focus:outline-hidden"
+              />
+              <span className="text-[10px] text-[#737373] mt-1 block">
+                Muncul sebagai nama entitas resmi pada dokumen Privacy Policy & ToS.
+              </span>
+            </div>
+
+            {/* Email Bisnis */}
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[#737373] mb-1.5 font-medium">
+                Email Korespondensi Resmi
+              </label>
+              <input
+                type="email"
+                value={legalForm.contactEmail}
+                onChange={(e) => setLegalForm({ ...legalForm, contactEmail: e.target.value })}
+                placeholder="legal@kromacafe.id"
+                className="w-full px-3 py-2 text-xs bg-white border border-[#E5E2DC] text-[#141416] focus:border-[#141416] focus:outline-hidden"
+              />
+              <span className="text-[10px] text-[#737373] mt-1 block">
+                Alamat email untuk permohonan penghapusan data atau pertanyaan hukum.
+              </span>
+            </div>
+
+            {/* Nomor Kontak */}
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[#737373] mb-1.5 font-medium">
+                Nomor Kontak Resmi
+              </label>
+              <input
+                type="text"
+                value={legalForm.contactPhone}
+                onChange={(e) => setLegalForm({ ...legalForm, contactPhone: e.target.value })}
+                placeholder="+62 812-8890-4200"
+                className="w-full px-3 py-2 text-xs bg-white border border-[#E5E2DC] text-[#141416] focus:border-[#141416] focus:outline-hidden"
+              />
+              <span className="text-[10px] text-[#737373] mt-1 block">
+                Nomor telepon atau WhatsApp resmi untuk verifikasi kebijakan.
+              </span>
+            </div>
+
+            {/* Tanggal Terakhir Diperbarui */}
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[#737373] mb-1.5 font-medium">
+                Tanggal Terakhir Diperbarui
+              </label>
+              <input
+                type="text"
+                value={legalForm.lastUpdatedDate}
+                onChange={(e) => setLegalForm({ ...legalForm, lastUpdatedDate: e.target.value })}
+                placeholder="2 September 2026"
+                className="w-full px-3 py-2 text-xs bg-white border border-[#E5E2DC] text-[#141416] focus:border-[#141416] focus:outline-hidden"
+              />
+              <span className="text-[10px] text-[#737373] mt-1 block">
+                Tanggal revisi kebijakan yang terbaca oleh pengunjung website.
+              </span>
+            </div>
+          </div>
+
+          <div className="pt-2 flex justify-end">
+            <button
+              type="submit"
+              className="py-2.5 px-5 bg-[#141416] text-[#FBFBF9] text-xs uppercase tracking-wider font-medium flex items-center space-x-2 hover:bg-[#27272A] cursor-pointer transition-colors"
+            >
+              <Save className="w-4 h-4" />
+              <span>Simpan Informasi Legal</span>
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Danger Zone: Factory Reset */}
